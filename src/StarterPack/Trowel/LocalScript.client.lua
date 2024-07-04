@@ -19,11 +19,12 @@ local seeds = settings.Seeds
 local clickPosition
 local clickTarget
 local selectedSeed
+local highlightedPlot
 
 -- Helper function to translate screen pointer position to 3D world position START
 local function findInGamePosition(inputPosition)
 	local camera = workspace.CurrentCamera
-	local unitray = camera:ViewportPointToRay(inputPosition.x, inputPosition.y)
+	local unitray = camera:ScreenPointToRay(inputPosition.x, inputPosition.y)
 	local ray = Ray.new(unitray.Origin, unitray.Direction * 100)
 	local target, position = workspace:FindPartOnRay(ray, player.Character or nil)
 	return position, target
@@ -46,6 +47,28 @@ local function closeSeedSelectorFrame()
 	seedSelectorFrame.Visible = false
 end
 
+local function resetHighlightedPlot()
+	if not highlightedPlot then return end
+
+	highlightedPlot.Transparency = 0
+	highlightedPlot = nil
+end
+
+local function highlightPlot(part)
+	if part and part.Name ~= "Plot" then resetHighlightedPlot() end
+
+	local plot = part
+	if plot and plot.Transparency ~= 0 then return end
+
+	-- handle case where highlightedPlot is adjacent to plot currently being hovered over
+	resetHighlightedPlot()
+
+	if plot then
+		plot.Transparency = 0.2
+		highlightedPlot = plot
+	end
+end
+
 -- handle player input START
 local function onInputBegan(inputObject, processedEvent)
 	if processedEvent then return end
@@ -55,6 +78,15 @@ local function onInputBegan(inputObject, processedEvent)
 		--clickPosition, clickTarget = findInGamePosition(inputObject.Position)
 	elseif (inputObject.UserInputType == Enum.UserInputType.Keyboard) and (inputObject.KeyCode == Enum.KeyCode.E) then
 		toggleSeedSelectorFrame()
+	end
+end
+
+local function onInputChanged(inputObject, processedEvent)
+	if processedEvent then return end
+
+	if (inputObject.UserInputType == Enum.UserInputType.MouseMovement) then
+		local hoverPosition, hoverTarget = findInGamePosition(inputObject.Position)
+		highlightPlot(hoverTarget)
 	end
 end
 
@@ -68,23 +100,13 @@ end
 --	end
 --end
 
---local function onInputChanged(inputObject, processedEvent)
---	if processedEvent then return end
-
---	if (inputObject.UserInputType == Enum.UserInputType.MouseMovement) or
---		(inputObject.UserInputType == Enum.UserInputType.Touch) then
---		--forecastArea(findInGamePosition(inputObject.Position))
---	end
---end
-
-local function selectSeed(seedName, seedButton)	
-	selectedSeed = seedName
-	
-	-- reset all buttons' border size
-	local frame = seedButton.Parent
-	for seedName in seeds do
-		frame:WaitForChild(seedName).BorderSizePixel = 2
+local function selectSeed(seedName, seedButton)
+	if selectedSeed then
+		local frame = seedButton.Parent
+		frame:WaitForChild(selectedSeed).BorderSizePixel = 2
 	end
+
+	selectedSeed = seedName
 	
 	seedButton.BorderSizePixel = 5
 	print("updated selectedSeed to " .. seedName)
@@ -104,7 +126,7 @@ local cornInputBeganConnection
 
 tool.Equipped:Connect(function()
 	inputBeganConnection = UserInputService.InputBegan:Connect(onInputBegan)
-	--inputChangedConnection = UserInputService.InputChanged:Connect(onInputChanged)
+	inputChangedConnection = UserInputService.InputChanged:Connect(onInputChanged)
 	--inputEndedConnection = UserInputService.InputEnded:Connect(onInputEnded)
 	carrotInputBeganConnection = seedSelectorFrame.carrot.InputBegan:Connect(function(inputObject, processedEvent)
 		if processedEvent then return end
@@ -136,8 +158,8 @@ tool.Unequipped:Connect(function()
 	closeSeedSelectorFrame()
 	inputBeganConnection:Disconnect()
 	inputBeganConnection = nil
-	--inputChangedConnection:Disconnect()
-	--inputChangedConnection = nil
+	inputChangedConnection:Disconnect()
+	inputChangedConnection = nil
 	--inputEndedConnection:Disconnect()
 	--inputEndedConnection = nil
 	carrotInputBeganConnection:Disconnect()
