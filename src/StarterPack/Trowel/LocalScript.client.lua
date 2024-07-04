@@ -42,6 +42,9 @@ local function toggleSeedSelectorFrame()
 	seedSelectorFrame.Visible = not currentVisibility	
 end
 
+local function closeSeedSelectorFrame()
+	seedSelectorFrame.Visible = false
+end
 
 -- handle player input START
 local function onInputBegan(inputObject, processedEvent)
@@ -50,7 +53,7 @@ local function onInputBegan(inputObject, processedEvent)
 	if (inputObject.UserInputType == Enum.UserInputType.MouseButton1) or
 		(inputObject.UserInputType == Enum.UserInputType.Touch) then
 		--clickPosition, clickTarget = findInGamePosition(inputObject.Position)
-	elseif (inputObject.UserInputType == Enum.UserInputType.MouseButton2) then
+	elseif (inputObject.UserInputType == Enum.UserInputType.Keyboard) and (inputObject.KeyCode == Enum.KeyCode.E) then
 		toggleSeedSelectorFrame()
 	end
 end
@@ -85,6 +88,7 @@ local function selectSeed(seedName, seedButton)
 	
 	seedButton.BorderSizePixel = 5
 	print("updated selectedSeed to " .. seedName)
+	toggleSeedSelectorFrame()
 end
 -- handle player input END
 
@@ -129,6 +133,7 @@ tool.Equipped:Connect(function()
 end)
 
 tool.Unequipped:Connect(function()
+	closeSeedSelectorFrame()
 	inputBeganConnection:Disconnect()
 	inputBeganConnection = nil
 	--inputChangedConnection:Disconnect()
