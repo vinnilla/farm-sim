@@ -34,7 +34,7 @@ end
 
 -- Remote Function to send client mouse data to server START
 tool:WaitForChild("RemoteFunction").OnClientInvoke = function(...)
-	return clickPosition, clickTarget
+	return selectedSeed, highlightedPlot
 end
 -- Remote Function to send client mouse data to server END
 
@@ -55,10 +55,14 @@ local function resetHighlightedPlot()
 end
 
 local function highlightPlot(part)
-	if part and part.Name ~= "Plot" then resetHighlightedPlot() end
+	if not part then return end
+	if part.Name ~= "Plot" then resetHighlightedPlot() end
 
 	local plot = part
-	if plot and plot.Transparency ~= 0 then return end
+	local planted = plot:GetAttribute(settings.PlantedAttribute)
+
+	if planted then return end
+	if plot.Transparency ~= 0 then return end
 
 	-- handle case where highlightedPlot is adjacent to plot currently being hovered over
 	resetHighlightedPlot()
@@ -109,7 +113,6 @@ local function selectSeed(seedName, seedButton)
 	selectedSeed = seedName
 	
 	seedButton.BorderSizePixel = 5
-	print("updated selectedSeed to " .. seedName)
 	toggleSeedSelectorFrame()
 end
 -- handle player input END

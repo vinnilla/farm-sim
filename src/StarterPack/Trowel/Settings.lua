@@ -13,11 +13,27 @@ local seedData = {
 	}
 }
 
+local spacingData = {
+	[1] = { Vector3.new(0, 0.5, 0) },
+	[9] = {
+		Vector3.new(0, 0.5, 0),
+		Vector3.new(0, 0.5, 4),
+		Vector3.new(0, 0.5, -4),
+		Vector3.new(4, 0.5, 0),
+		Vector3.new(4, 0.5, 4),
+		Vector3.new(4, 0.5, -4),
+		Vector3.new(-4, 0.5, 0),
+		Vector3.new(-4, 0.5, 4),
+		Vector3.new(-4, 0.5, -4)
+	}
+}
+
 return {
 	ToolTip = "Plant seeds";
+	PlantedAttribute = "Planted";
 	
-	Reach = 32;			-- how far the tool can reach
 	Cooldown = .5;		-- tool cooldown in seconds
 	
 	Seeds = seedData;
+	Spacing = spacingData;
 }
