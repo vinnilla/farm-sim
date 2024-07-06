@@ -5,11 +5,10 @@ local settings = require(script.Parent.Settings)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
+local remoteEvent = ReplicatedStorage:FindFirstChildOfClass("RemoteEvent")
+local animationModule = require(ReplicatedStorage:WaitForChild("AnimationModule"))
+
 local gardenAssets = ReplicatedStorage.GardenAssets
---local plot = gardenAssets.Plot
-
---local seedSelectorFrame = gardenAssets.ui.SeedSelectorFrame
-
 local player = game.Players.LocalPlayer
 local seedSelectorFrame = player.PlayerGui.ScreenGui.SeedSelectorFrame
 local tool = script.Parent
@@ -30,13 +29,6 @@ local function findInGamePosition(inputPosition)
 	return position, target
 end
 -- Helper function to translate screen pointer position to 3D world position START
-
-
--- Remote Function to send client mouse data to server START
-tool:WaitForChild("RemoteFunction").OnClientInvoke = function(...)
-	return selectedSeed, highlightedPlot
-end
--- Remote Function to send client mouse data to server END
 
 local function toggleSeedSelectorFrame()
 	local currentVisibility = seedSelectorFrame.Visible
@@ -79,7 +71,8 @@ local function onInputBegan(inputObject, processedEvent)
 
 	if (inputObject.UserInputType == Enum.UserInputType.MouseButton1) or
 		(inputObject.UserInputType == Enum.UserInputType.Touch) then
-		--clickPosition, clickTarget = findInGamePosition(inputObject.Position)
+			animationModule.Slash(tool)
+			remoteEvent:FireServer(selectedSeed, highlightedPlot)
 	elseif (inputObject.UserInputType == Enum.UserInputType.Keyboard) and (inputObject.KeyCode == Enum.KeyCode.E) then
 		toggleSeedSelectorFrame()
 	end
@@ -116,8 +109,6 @@ local function selectSeed(seedName, seedButton)
 	toggleSeedSelectorFrame()
 end
 -- handle player input END
-
-
 
 -- Connection management START
 local inputBeganConnection
