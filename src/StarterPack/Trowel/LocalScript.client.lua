@@ -5,15 +5,17 @@ local settings = require(script.Parent.Settings)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
-local remoteEvent = ReplicatedStorage:FindFirstChildOfClass("RemoteEvent")
+local plantEvent = ReplicatedStorage:WaitForChild("PlantEvent")
+
 local animationModule = require(ReplicatedStorage:WaitForChild("AnimationModule"))
+local plantSettings = require(ReplicatedStorage:WaitForChild("PlantSettings"))
 
 local gardenAssets = ReplicatedStorage.GardenAssets
 local player = game.Players.LocalPlayer
 local seedSelectorFrame = player.PlayerGui.ScreenGui.SeedSelectorFrame
 local tool = script.Parent
 local handle = tool.Handle
-local seeds = settings.Seeds
+local seeds = plantSettings.seedData
 
 local clickPosition
 local clickTarget
@@ -72,7 +74,7 @@ local function onInputBegan(inputObject, processedEvent)
 	if (inputObject.UserInputType == Enum.UserInputType.MouseButton1) or
 		(inputObject.UserInputType == Enum.UserInputType.Touch) then
 			animationModule.Slash(tool)
-			remoteEvent:FireServer(selectedSeed, highlightedPlot)
+			plantEvent:FireServer(selectedSeed, highlightedPlot)
 	elseif (inputObject.UserInputType == Enum.UserInputType.Keyboard) and (inputObject.KeyCode == Enum.KeyCode.E) then
 		toggleSeedSelectorFrame()
 	end

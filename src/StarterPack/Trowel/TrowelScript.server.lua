@@ -1,8 +1,12 @@
 -- Trowel @ kidvinnilla
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 
-local remoteEvent = ReplicatedStorage:FindFirstChildOfClass("RemoteEvent")
+local plantEvent = ReplicatedStorage:WaitForChild("PlantEvent")
+local growthEvent = ServerScriptService:WaitForChild("GrowthEvent")
+
+local plantSettings = require(ReplicatedStorage:WaitForChild("PlantSettings"))
 
 local gardenAssets = ReplicatedStorage.GardenAssets
 local plot = gardenAssets.Plot
@@ -23,12 +27,12 @@ tool.Activated:Connect(function()
 end)
 
 local function plantSeed(player, selectedSeed, selectedPlot)
-	if selectedSeed and selectedPlot then
+	if selectedSeed and selectedPlot and selectedPlot.Name == "Plot" then
 		tool.Enabled = false
 
-		local seedData = settings.Seeds[selectedSeed]
+		local seedData = plantSettings.seedData[selectedSeed]
 		local seedSpacing = seedData.spacing
-		local spacingData = settings.Spacing[seedSpacing]
+		local spacingData = plantSettings.spacingData[seedSpacing]
 		local seedAssetsFolder = gardenAssets.vegetables[selectedSeed]
 		local seedMesh = seedAssetsFolder:WaitForChild("seed")
 		local plotPosition = selectedPlot.Position
@@ -39,9 +43,9 @@ local function plantSeed(player, selectedSeed, selectedPlot)
 			primaryPart.Position = plotPosition + spacingData[counter]
 			primaryPart.Anchored = true
 			clone.Parent = selectedPlot
-
-			-- TODO: start async growing of each separate plant
 		end
+		-- TODO: set up bindable event to simulate async growing of each separate plant
+		growthEvent:Fire(selectedSeed, selectedPlot)
 
 		selectedPlot:SetAttribute(settings.PlantedAttribute, true)
 		
@@ -50,4 +54,4 @@ local function plantSeed(player, selectedSeed, selectedPlot)
 	end
 end
 
-remoteEvent.OnServerEvent:Connect(plantSeed)
+plantEvent.OnServerEvent:Connect(plantSeed)

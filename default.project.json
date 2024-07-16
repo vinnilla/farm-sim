@@ -16,6 +16,11 @@
       "$className": "StarterPack",
       "$ignoreUnknownInstances": true,
       "$path": "src/StarterPack"
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$ignoreUnknownInstances": true,
+      "$path": "src/ServerScriptService"
     }
   }
 }
