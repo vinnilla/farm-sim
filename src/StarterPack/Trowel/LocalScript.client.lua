@@ -53,7 +53,7 @@ local function highlightPlot(part)
 	if part.Name ~= "Plot" then resetHighlightedPlot() end
 
 	local plot = part
-	local planted = plot:GetAttribute(settings.PlantedAttribute)
+	local planted = plot:GetAttribute(plantSettings.PlantedAttribute)
 
 	if planted then return end
 	if plot.Transparency ~= 0 then return end

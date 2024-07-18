@@ -3,7 +3,6 @@
 
 return {
 	ToolTip = "Plant seeds";
-	PlantedAttribute = "Planted";
 	
 	Cooldown = .5;		-- tool cooldown in seconds
 }

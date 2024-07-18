@@ -33,6 +33,7 @@ local spacingData = {
 }
 
 return {
+	PlantedAttribute = "Planted";
 	seedData = seedData;
 	spacingData = spacingData;
 }

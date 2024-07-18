@@ -47,7 +47,7 @@ local function plantSeed(player, selectedSeed, selectedPlot)
 		-- TODO: set up bindable event to simulate async growing of each separate plant
 		growthEvent:Fire(selectedSeed, selectedPlot)
 
-		selectedPlot:SetAttribute(settings.PlantedAttribute, true)
+		selectedPlot:SetAttribute(plantSettings.PlantedAttribute, true)
 		
 		wait(settings.Cooldown)
 		tool.Enabled = true
